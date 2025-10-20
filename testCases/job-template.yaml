@@ -12,6 +12,7 @@ spec:
           #image: busybox:1.36
           image: sekhmetn/kube-hacking-image:0.0.2
           command: ["bash", "-c", "echo 'Pod security test success!';echo 'id:' && id; echo 'sudo id: ' && sudo id ; sleep 5"]
+          imagePullPolicy: IfNotPresent
           resources:
             limits:
               #cpu: "1"

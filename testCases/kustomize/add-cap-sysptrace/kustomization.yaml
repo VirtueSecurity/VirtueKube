@@ -1,0 +1,26 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../base
+patches:
+  - target:
+      kind: Pod
+      name: pod-security-test
+    patch: |-
+      - op: remove
+        path: /spec/containers/0/securityContext/capabilities/drop
+      - op: add
+        path: /spec/containers/0/securityContext/capabilities/add
+        value: ["SYS_PTRACE"]
+      - op: add
+        path: /metadata/annotations/virtuekube.io~1test-title
+        value: "Add SYS_PTRACE capability"
+      - op: add
+        path: /metadata/annotations/virtuekube.io~1test-description
+        value: "Container adds SYS_PTRACE capability. Violates Restricted unless allowed by policy."
+      - op: add
+        path: /metadata/annotations/virtuekube.io~1test-references
+        value: "https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted"
+      - op: add
+        path: /metadata/annotations/virtuekube.io~1test-expected-result
+        value: false

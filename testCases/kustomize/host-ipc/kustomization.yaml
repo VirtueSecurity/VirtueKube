@@ -1,0 +1,24 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../base
+patches:
+  - target:
+      kind: Pod
+      name: pod-security-test
+    patch: |-      
+      - op: add
+        path: /spec/hostIPC
+        value: true
+      - op: add
+        path: /metadata/annotations/virtuekube.io~1test-title
+        value: "Host IPC"
+      - op: add
+        path: /metadata/annotations/virtuekube.io~1test-description
+        value: "Pod uses hostIPC=true. Disallowed by Restricted."
+      - op: add
+        path: /metadata/annotations/virtuekube.io~1test-references
+        value: "https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted"
+      - op: add
+        path: /metadata/annotations/virtuekube.io~1test-expected-result
+        value: false

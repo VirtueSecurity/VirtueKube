@@ -1,0 +1,25 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../base
+patches:
+  - target:
+      kind: Pod
+      name: pod-security-test
+    patch: |-
+      - op: add
+        path: /spec/containers/0/securityContext/seLinuxOptions
+        value:
+          level: s0:c123,c456
+      - op: add
+        path: /metadata/annotations/virtuekube.io~1test-title
+        value: "SELinux options set"
+      - op: add
+        path: /metadata/annotations/virtuekube.io~1test-description
+        value: "Container sets explicit seLinuxOptions. May violate Restricted depending on policy."
+      - op: add
+        path: /metadata/annotations/virtuekube.io~1test-references
+        value: "https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted"
+      - op: add
+        path: /metadata/annotations/virtuekube.io~1test-expected-result
+        value: false

@@ -1,0 +1,33 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../base
+patches:
+  - target:
+      kind: Pod
+      name: pod-security-test
+    patch: |-
+      - op: add
+        path: /spec/volumes
+        value:
+          - name: hp
+            hostPath:
+              path: /
+              type: Directory
+      - op: add
+        path: /spec/containers/0/volumeMounts/0
+        value:
+          name: hp
+          mountPath: /host
+      - op: add
+        path: /metadata/annotations/virtuekube.io~1test-title
+        value: "HostPath / volume mount"
+      - op: add
+        path: /metadata/annotations/virtuekube.io~1test-description
+        value: "Pod mounts a hostPath from /. Disallowed by Restricted."
+      - op: add
+        path: /metadata/annotations/virtuekube.io~1test-references
+        value: "https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted"
+      - op: add
+        path: /metadata/annotations/virtuekube.io~1test-expected-result
+        value: false

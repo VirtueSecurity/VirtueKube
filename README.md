@@ -8,7 +8,7 @@
     * [Extract IP Addresses and DNS Names](#extract-ip-addresses-and-dns-names)
     * [Collect Pod Logs](#collect-pod-logs)
     * [Test whether the Default Pod and Job Spec is Accepted by the Cluster](#test-whether-the-default-pod-and-job-spec-is-accepted-by-the-cluster)
-    * [Deploy Policy Test Cases](#deploy-policy-test-cases)
+    * [Run Policy Test Cases to Identify Gaps in Enforcement](#run-policy-test-cases-to-identify-gaps-in-enforcement)
     * [NMap Scan (Inside The Cluster) Correlated to Cluster Namespace and Resource](#nmap-scan-inside-the-cluster-correlated-to-cluster-namespace-and-resource)
     * [Convert NMap Results to GoWitness Command Line](#convert-nmap-results-to-gowitness-command-line)
     * [Deploy Socks5 Proxy](#deploy-socks5-proxy)
@@ -119,6 +119,35 @@ $ java -jar build/libs/VirtueKube-0.1-all.jar dump-cluster -h
 Usage: java -jar virtuekube-all.jar dump-cluster [<options>]
 
   (online) Dumps all resources in the cluster (This command must be run first)
+  
+$ java -jar build/libs/VirtueKube-0.1-all.jar dump-cluster
+
+Found 3 componentstatuses 
+Found 62 configmaps 
+Found 37 endpoints 
+Found 512 events 
+Found 0 limitranges 
+Found 15 namespaces 
+Found 1 nodes 
+Found 0 persistentvolumeclaims 
+Found 0 persistentvolumes 
+Found 31 pods 
+Found 0 podtemplates 
+...
+Wrote 445 resources for namespace cluster-wide to /../output/bynamespace/cluster-wide.json 
+Wrote 445 resources for namespace cluster-wide to /../output/bynamespace/cluster-wide.yaml 
+Wrote 64 resources for namespace capsule to /../output/bynamespace/capsule.json 
+Wrote 64 resources for namespace capsule to /../output/bynamespace/capsule.yaml 
+Wrote 67 resources for namespace cert-manager to /../output/bynamespace/cert-manager.json 
+Wrote 67 resources for namespace cert-manager to /../output/bynamespace/cert-manager.yaml
+...
+Wrote Helm File at: /../output/helm/helmList.md 
+Wrote Helm File at: /../output/helm/helmList.csv 
+Wrote Resource Summary CSV at: /../output/all/resource-summary.csv 
+Wrote Resource Summary Markdown at: /../output/all/resource-summary.md 
+Follow Up Command gitleaks dir /../output/all.yaml -f csv -r gitleaks-all-yaml.csv 
+Follow Up Command gitleaks dir /../output/helm -f csv -r gitleaks-helm-dir.csv 
+
 ```
 
 ### Extract IP Addresses and DNS Names
@@ -144,6 +173,17 @@ Usage: java -jar virtuekube-all.jar ip [<options>]
 Options:
   -d, --dump=true|false  Dump
   -h, --help             Show this message and exit
+
+$ java -jar build/libs/VirtueKube-0.1-all.jar ip
+
+Wrote to /mnt/secondencrypteddrive/projects/KubePentest/output/ips/podipandports.txt 
+Wrote to /mnt/secondencrypteddrive/projects/KubePentest/output/ips/nodeips.txt 
+Wrote to /mnt/secondencrypteddrive/projects/KubePentest/output/ips/podips.txt 
+Wrote to /mnt/secondencrypteddrive/projects/KubePentest/output/ips/ingressrouteipsandports.txt 
+Wrote to /mnt/secondencrypteddrive/projects/KubePentest/output/ips/servicedns.txt 
+Wrote to /mnt/secondencrypteddrive/projects/KubePentest/output/ips/serviceips.txt 
+Wrote to /mnt/secondencrypteddrive/projects/KubePentest/output/ips/servicednsandports.txt 
+Caution ingress, ingressRouteTcp, and ingressRouteUdp are not yet supported. Run `kubectl get` for each of those resources 
 ```
 
 ### Collect Pod Logs
@@ -165,12 +205,18 @@ Usage: java -jar virtuekube-all.jar pod-logs [<options>]
 
 Options:
   -h, --help  Show this message and exit
+  
+$ java -jar build/libs/VirtueKube-0.1-all.jar pod-logs
+
+Pod logs saved to /mnt/secondencrypteddrive/projects/KubePentest/output/podlogs 
+Found 39 logs 
 ```
 
 
 ### Test whether the Default Pod and Job Spec is Accepted by the Cluster
 
 > Run this command as the simulated compromised developer kubectl user
+> Note: the output from the pod or job shouldn't necessarily report as running as root successfully. Simply receiving output indicates success.
 
 - Update the Pod and Job specs by modifying `testCases/job-template.yaml` and `testCases/pod-template.yaml`
 
@@ -188,27 +234,138 @@ Options:
   -t, --timeout=<int>        Timeout in seconds for waiting for deployments
   -h, --help                 Show this message and exit
 
+$ java -jar build/libs/VirtueKube-0.1-all.jar test-deployment -n team-b-test
+
+Job Deploying job test-job-1760973196311 to namespace team-b-test 
+Job 'test-job-1760973196311' Status: Active=1, Succeeded=0, Failed=0 
+Job 'test-job-1760973196311' Status: Active=1, Succeeded=0, Failed=0 
+Job 'test-job-1760973196311' Status: Active=1, Succeeded=0, Failed=0 
+Job 'test-job-1760973196311' Status: Active=0, Succeeded=0, Failed=0 
+Job 'test-job-1760973196311' Status: Active=0, Succeeded=1, Failed=0 
+Job 'test-job-1760973196311' succeeded. 
+Success Job 'test-job-1760973196311' completed successfully 
+Job Status Name: test-job-1760973196311 
+  Active: 0 
+  Succeeded: 1 
+  Failed: 0 
+  Completion Time: 2025-10-20T15:13:25Z 
+  Start Time: 2025-10-20T15:13:17Z 
+  Duration: From 2025-10-20T15:13:17Z to 2025-10-20T15:13:25Z 
+Job Pod Found pod test-job-1760973196311-8nc5q for job test-job-1760973196311 
+Pod Status Name: test-job-1760973196311-8nc5q 
+  Phase: Succeeded 
+  Host IP: 192.168.122.208 
+  Pod IP: 10.42.0.55 
+  Start Time: 2025-10-20T15:13:17Z 
+  Container: test-container 
+    Ready: false 
+    Restart Count: 0 
+    State: Terminated (exit code: 0, reason: Completed) 
+  Condition: PodReadyToStartContainers (Status: False, Reason: N/A) 
+  Condition: Initialized (Status: True, Reason: PodCompleted) 
+  Condition: Ready (Status: False, Reason: PodCompleted) 
+  Condition: ContainersReady (Status: False, Reason: PodCompleted) 
+  Condition: PodScheduled (Status: True, Reason: N/A) 
+Pod Logs Name: test-job-1760973196311-8nc5q 
+Container: test-container Logs: 
+Pod security test success!
+id:
+uid=1000(appuser) gid=1000(appuser) groups=1000(appuser)
+sudo id: 
+sudo: unable to change to root gid: Operation not permitted
+sudo: error initializing audit plugin sudoers_audit
+ 
+Pod Template Loading /mnt/secondencrypteddrive/projects/KubePentest/testCases/pod-template.yaml 
+Pod Deploying pod test-pod-1760973205581 to namespace team-b-test 
+Pod 'test-pod-1760973205581' Status: Phase=Pending 
+Pod 'test-pod-1760973205581' Status: Phase=Pending 
+Pod 'test-pod-1760973205581' Status: Phase=Pending 
+Pod 'test-pod-1760973205581' Status: Phase=Pending 
+Pod 'test-pod-1760973205581' Status: Phase=Running 
+Pod 'test-pod-1760973205581' Status: Phase=Running 
+Pod 'test-pod-1760973205581' Status: Phase=Succeeded 
+Pod 'test-pod-1760973205581' succeeded. 
+Success Pod 'test-pod-1760973205581' completed successfully 
+Pod Status Name: test-pod-1760973205581 
+  Phase: Succeeded 
+  Host IP: 192.168.122.208 
+  Pod IP: 10.42.0.56 
+  Start Time: 2025-10-20T15:13:25Z 
+  Container: test-container 
+    Ready: false 
+    Restart Count: 0 
+    State: Terminated (exit code: 0, reason: Completed) 
+  Condition: PodReadyToStartContainers (Status: False, Reason: N/A) 
+  Condition: Initialized (Status: True, Reason: PodCompleted) 
+  Condition: Ready (Status: False, Reason: PodCompleted) 
+  Condition: ContainersReady (Status: False, Reason: PodCompleted) 
+  Condition: PodScheduled (Status: True, Reason: N/A) 
+Pod Logs Name: test-pod-1760973205581 
+Container: test-container Logs: 
+Pod security test success!
+id:
+uid=1000(appuser) gid=1000(appuser) groups=1000(appuser)
+sudo id: 
+sudo: unable to change to root gid: Operation not permitted
+sudo: error initializing audit plugin sudoers_audit
+ 
+Init Container: test-initcontainer Logs: 
+Pod security test success!
+id:
+uid=1000(appuser) gid=1000(appuser) groups=1000(appuser)
+sudo id: 
+sudo: unable to change to root gid: Operation not permitted
+sudo: error initializing audit plugin sudoers_audit
+
 ```
 
-### Deploy Policy Test Cases
+### Run Policy Test Cases to Identify Gaps in Enforcement
 
-> Run this command as the simulated compromised developer kubectl user
+> Run these commands as the simulated compromised developer kubectl user
+
+First, create the test cases based on the `testCases/pod-template.yaml`. This uses`kustomize` (now part of `kubectl`) and validation by `kubeconform` (https://github.com/yannh/kubeconform?tab=readme-ov-file#Installation). The test kustomize test case sources are found in the `testCases/kustomize` directory. The test cases are saved to the `output/testCases/kustomize` directory.
 
 ```bash
-$ java -jar build/libs/VirtueKube-0.1-all.jar deploy-test-cases -h
+$ java -jar build/libs/VirtueKube-0.1-all.jar generate-kustomize-test-cases
+Generated /.../output/testCases/kustomize/run-as-root-group.yaml 
+Validated run-as-root-group passed kubeconform 
+Generated /.../output/testCases/kustomize/host-network.yaml 
+Validated host-network passed kubeconform 
+Generated /.../output/testCases/kustomize/control.yaml 
+Validated control passed kubeconform 
+Generated /.../output/testCases/kustomize/add-cap-sysadmin.yaml 
+...
+```
 
-Usage: java -jar virtuekube-all.jar deploy-test-cases [<options>]
+Next, run the test cases.
 
-  (online) Deploy workloads to the cluster to test out specific controls
+```bash
+$ java -jar build/libs/VirtueKube-0.1-all.jar report-kustomize-test-cases -h
+Usage: java -jar virtuekube-all.jar report-kustomize-test-cases [<options>]
+
+  (online) Run generated kustomize pod test cases and produce Markdown/CSV/JSON reports
 
 Options:
-  -n, --namespace=<text>        Namespace to deploy to
-  -p, --pod-template=<text>     job template file
-  -t, --pod-time-out=<int>      Number of seconds to wait for pod deploy to succeed/fail before giving up
-  -s, --service-account=<text>  The name of the service account to try to access
-  -h, --help                    Show this message and exit
+  -n, --namespace=<text>  Namespace to deploy the nmap job to
+  -h, --help              Show this message and exit
 
+
+$ java -jar build/libs/VirtueKube-0.1-all.jar report-kustomize-test-cases -n team-b-test
+Deploying pod Privileged container to namespace team-b-test 
+Deploying pod Seccomp unconfined (container) to namespace team-b-test 
+Deploying pod Host IPC to namespace team-b-test 
+Deploying pod Run as root to namespace team-b-test 
+Deploying pod Add ALL capabilities (init container) to namespace team-b-test 
+Deploying pod AppArmor unconfined to namespace team-b-test 
+...
+Reports Written: /.../output/testCases/kustomize/report.md
+/.../output/testCases/kustomize/report.csv
+/.../output/testCases/kustomize/report.json 
 ```
+
+![img.png](images/ContainerLogOutputExample.png)
+![img_1.png](images/SecurityTestCaseTable.png)
+
 
 ### NMap Scan (Inside The Cluster) Correlated to Cluster Namespace and Resource
 
@@ -233,7 +390,30 @@ Options:
   --timeout=<int>                               Timeout for the nmap scan in minutes. Default is 240 minutes
   -h, --help                                    Show this message and exit
 
+$ java -jar build/libs/VirtueKube-0.1-all.jar nmap-scan -n team-b-test -s pods
+
+Nmap Scan Preparing to scan approximately 29 hosts 
+Nmap Job Creating job nmap-scan-1760973347241 
+Job 'nmap-scan-1760973347241' deployed. Waiting for completion... 
+Progress 0/29 hosts completed 
+...
+Progress 7/29 hosts completed 
+Progress 28/29 hosts completed 
+Progress 28/29 hosts completed 
+Progress 28/29 hosts completed 
+Progress 28/29 hosts completed 
+Job 'nmap-scan-1760973347241' succeeded. 
+Progress 28/29 hosts completed 
+Nmap Scan Results saved to /mnt/secondencrypteddrive/projects/KubePentest/output/nmap/nmap-results-pods-20251020-101547.xml
+Nmap Scan Coorelated results saved to /mnt/secondencrypteddrive/projects/KubePentest/output/nmap/nmap-coorelated-pods-20251020-101547.json 
+Nmap Scan Coorelated results saved to /mnt/secondencrypteddrive/projects/KubePentest/output/nmap/nmap-coorelated-pods-20251020-101547.csv 
+Nmap Scan Coorelated results saved to /mnt/secondencrypteddrive/projects/KubePentest/output/nmap/nmap-coorelated-pods-20251020-101547.md 
+Nmap logs Results saved to /mnt/secondencrypteddrive/projects/KubePentest/output/nmap/nmap-logs-pods-20251020-101547.txt 
+Job 'nmap-scan-1760973347241' deleted 
 ```
+
+
+![img.png](images/NmapCoorelated.png)
 
 ### Convert NMap Results to GoWitness Command Line
 
@@ -276,6 +456,24 @@ Options:
   -p, --pod-template=<text>  Pod template file
   -l, --label=<text>         Label to identify the proxy pod
   -h, --help                 Show this message and exit
+
+$ java -jar build/libs/VirtueKube-0.1-all.jar proxy-socks5 -n team-b-test
+Pod Template Loading /mnt/secondencrypteddrive/projects/KubePentest/testCases/pod-template.yaml 
+Pod Deploying SOCKS5 proxy pod socks5-proxy to namespace team-b-test 
+Pod 'socks5-proxy' Status: Phase=Pending 
+Pod 'socks5-proxy' Status: Phase=Pending 
+Pod 'socks5-proxy' Status: Phase=Pending 
+Pod 'socks5-proxy' Status: Phase=Running 
+Pod 'socks5-proxy' is ready. 
+Port Forwarding Setting up port forwarding from localhost:1080 to socks5-proxy:1080 
+Port Forward Forwarding from 127.0.0.1:1080 -> 1080 
+Port Forward Forwarding from [::1]:1080 -> 1080 
+SOCKS5 Proxy Proxy is now available at localhost:1080 
+Usage Configure your application to use SOCKS5 proxy at localhost:1080 
+Burp In Burp Suite, go to Settings -> Network -> Connections SOCKS Proxy. Add 127.0.0.1 for the host. Add 1080 for the port. Checkmark "Use SOCKS Proxy" 
+gowitness command $ gowitness scan --chrome-proxy socks5://127.0.0.1:1080 file -f hosts.txt --write-screenshots --write-db -D
+$ gowitness report server 
+How to stop the pod Type 'quit' to stop the proxy and clean up resources 
 
 ```
 
