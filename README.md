@@ -77,7 +77,7 @@ This tool is built by Nick Coblentz at [Virtue Security](https://www.virtuesecur
 ### VirtueKube List of Subcommands
 
 ```bash
-$ java -jar build/libs/VirtueKube-0.1-all.jar -h
+$ java -jar build/libs/VirtueKube-0.2.0-all.jar -h
 
 Usage: java -jar virtuekube-all.jar [<options>] <command> [<args>]...
 
@@ -114,13 +114,13 @@ The command will:
 - Save all data to the output directory
 
 ```bash
-$ java -jar build/libs/VirtueKube-0.1-all.jar dump-cluster -h
+$ java -jar build/libs/VirtueKube-0.2.0-all.jar dump-cluster -h
 
 Usage: java -jar virtuekube-all.jar dump-cluster [<options>]
 
   (online) Dumps all resources in the cluster (This command must be run first)
   
-$ java -jar build/libs/VirtueKube-0.1-all.jar dump-cluster
+$ java -jar build/libs/VirtueKube-0.2.0-all.jar dump-cluster
 
 Found 3 componentstatuses 
 Found 62 configmaps 
@@ -150,6 +150,8 @@ Follow Up Command gitleaks dir /../output/helm -f csv -r gitleaks-helm-dir.csv
 
 ```
 
+![img.png](images/resource%20summary.png)
+
 ### Extract IP Addresses and DNS Names
 
 > This command is run offline, doesn't matter which user you run it as
@@ -164,7 +166,7 @@ Output files:
 
 
 ```bash
-$ java -jar build/libs/VirtueKube-0.1-all.jar ip -h
+$ java -jar build/libs/VirtueKube-0.2.0-all.jar ip -h
 
 Usage: java -jar virtuekube-all.jar ip [<options>]
 
@@ -174,15 +176,15 @@ Options:
   -d, --dump=true|false  Dump
   -h, --help             Show this message and exit
 
-$ java -jar build/libs/VirtueKube-0.1-all.jar ip
+$ java -jar build/libs/VirtueKube-0.2.0-all.jar ip
 
-Wrote to /mnt/secondencrypteddrive/projects/KubePentest/output/ips/podipandports.txt 
-Wrote to /mnt/secondencrypteddrive/projects/KubePentest/output/ips/nodeips.txt 
-Wrote to /mnt/secondencrypteddrive/projects/KubePentest/output/ips/podips.txt 
-Wrote to /mnt/secondencrypteddrive/projects/KubePentest/output/ips/ingressrouteipsandports.txt 
-Wrote to /mnt/secondencrypteddrive/projects/KubePentest/output/ips/servicedns.txt 
-Wrote to /mnt/secondencrypteddrive/projects/KubePentest/output/ips/serviceips.txt 
-Wrote to /mnt/secondencrypteddrive/projects/KubePentest/output/ips/servicednsandports.txt 
+Wrote to /.../output/ips/podipandports.txt 
+Wrote to /.../output/ips/nodeips.txt 
+Wrote to /.../output/ips/podips.txt 
+Wrote to /.../output/ips/ingressrouteipsandports.txt 
+Wrote to /.../output/ips/servicedns.txt 
+Wrote to /.../output/ips/serviceips.txt 
+Wrote to /.../output/ips/servicednsandports.txt 
 Caution ingress, ingressRouteTcp, and ingressRouteUdp are not yet supported. Run `kubectl get` for each of those resources 
 ```
 
@@ -197,7 +199,7 @@ The command will:
 
 
 ```bash
-$ java -jar build/libs/VirtueKube-0.1-all.jar pod-logs -h
+$ java -jar build/libs/VirtueKube-0.2.0-all.jar pod-logs -h
 
 Usage: java -jar virtuekube-all.jar pod-logs [<options>]
 
@@ -206,9 +208,9 @@ Usage: java -jar virtuekube-all.jar pod-logs [<options>]
 Options:
   -h, --help  Show this message and exit
   
-$ java -jar build/libs/VirtueKube-0.1-all.jar pod-logs
+$ java -jar build/libs/VirtueKube-0.2.0-all.jar pod-logs
 
-Pod logs saved to /mnt/secondencrypteddrive/projects/KubePentest/output/podlogs 
+Pod logs saved to /.../output/podlogs 
 Found 39 logs 
 ```
 
@@ -221,7 +223,7 @@ Found 39 logs
 - Update the Pod and Job specs by modifying `testCases/job-template.yaml` and `testCases/pod-template.yaml`
 
 ```bash
-$ java -jar build/libs/VirtueKube-0.1-all.jar test-deployment -h
+$ java -jar build/libs/VirtueKube-0.2.0-all.jar test-deployment -h
 
 Usage: java -jar virtuekube-all.jar test-deployment [<options>]
 
@@ -234,7 +236,7 @@ Options:
   -t, --timeout=<int>        Timeout in seconds for waiting for deployments
   -h, --help                 Show this message and exit
 
-$ java -jar build/libs/VirtueKube-0.1-all.jar test-deployment -n team-b-test
+$ java -jar build/libs/VirtueKube-0.2.0-all.jar test-deployment -n team-b-test
 
 Job Deploying job test-job-1760973196311 to namespace team-b-test 
 Job 'test-job-1760973196311' Status: Active=1, Succeeded=0, Failed=0 
@@ -275,7 +277,7 @@ sudo id:
 sudo: unable to change to root gid: Operation not permitted
 sudo: error initializing audit plugin sudoers_audit
  
-Pod Template Loading /mnt/secondencrypteddrive/projects/KubePentest/testCases/pod-template.yaml 
+Pod Template Loading /.../testCases/pod-template.yaml 
 Pod Deploying pod test-pod-1760973205581 to namespace team-b-test 
 Pod 'test-pod-1760973205581' Status: Phase=Pending 
 Pod 'test-pod-1760973205581' Status: Phase=Pending 
@@ -326,7 +328,7 @@ sudo: error initializing audit plugin sudoers_audit
 First, create the test cases based on the `testCases/pod-template.yaml`. This uses`kustomize` (now part of `kubectl`) and validation by `kubeconform` (https://github.com/yannh/kubeconform?tab=readme-ov-file#Installation). The test kustomize test case sources are found in the `testCases/kustomize` directory. The test cases are saved to the `output/testCases/kustomize` directory.
 
 ```bash
-$ java -jar build/libs/VirtueKube-0.1-all.jar generate-kustomize-test-cases
+$ java -jar build/libs/VirtueKube-0.2.0-all.jar generate-kustomize-test-cases
 Generated /.../output/testCases/kustomize/run-as-root-group.yaml 
 Validated run-as-root-group passed kubeconform 
 Generated /.../output/testCases/kustomize/host-network.yaml 
@@ -340,7 +342,7 @@ Generated /.../output/testCases/kustomize/add-cap-sysadmin.yaml
 Next, run the test cases.
 
 ```bash
-$ java -jar build/libs/VirtueKube-0.1-all.jar report-kustomize-test-cases -h
+$ java -jar build/libs/VirtueKube-0.2.0-all.jar report-kustomize-test-cases -h
 Usage: java -jar virtuekube-all.jar report-kustomize-test-cases [<options>]
 
   (online) Run generated kustomize pod test cases and produce Markdown/CSV/JSON reports
@@ -350,7 +352,7 @@ Options:
   -h, --help              Show this message and exit
 
 
-$ java -jar build/libs/VirtueKube-0.1-all.jar report-kustomize-test-cases -n team-b-test
+$ java -jar build/libs/VirtueKube-0.2.0-all.jar report-kustomize-test-cases -n team-b-test
 Deploying pod Privileged container to namespace team-b-test 
 Deploying pod Seccomp unconfined (container) to namespace team-b-test 
 Deploying pod Host IPC to namespace team-b-test 
@@ -374,7 +376,7 @@ Reports Written: /.../output/testCases/kustomize/report.md
 This command uses the information extracted from the `ip` subcommand to deploy a pod inside the cluster to perform an nmap scan. The scan results are saved to the `output/nmap` directory.
 
 ```bash
-$ java -jar build/libs/VirtueKube-0.1-all.jar nmap-scan -h
+$ java -jar build/libs/VirtueKube-0.2.0-all.jar nmap-scan -h
 
 Usage: java -jar virtuekube-all.jar nmap-scan [<options>]
 
@@ -390,7 +392,7 @@ Options:
   --timeout=<int>                               Timeout for the nmap scan in minutes. Default is 240 minutes
   -h, --help                                    Show this message and exit
 
-$ java -jar build/libs/VirtueKube-0.1-all.jar nmap-scan -n team-b-test -s pods
+$ java -jar build/libs/VirtueKube-0.2.0-all.jar nmap-scan -n team-b-test -s pods
 
 Nmap Scan Preparing to scan approximately 29 hosts 
 Nmap Job Creating job nmap-scan-1760973347241 
@@ -404,11 +406,11 @@ Progress 28/29 hosts completed
 Progress 28/29 hosts completed 
 Job 'nmap-scan-1760973347241' succeeded. 
 Progress 28/29 hosts completed 
-Nmap Scan Results saved to /mnt/secondencrypteddrive/projects/KubePentest/output/nmap/nmap-results-pods-20251020-101547.xml
-Nmap Scan Coorelated results saved to /mnt/secondencrypteddrive/projects/KubePentest/output/nmap/nmap-coorelated-pods-20251020-101547.json 
-Nmap Scan Coorelated results saved to /mnt/secondencrypteddrive/projects/KubePentest/output/nmap/nmap-coorelated-pods-20251020-101547.csv 
-Nmap Scan Coorelated results saved to /mnt/secondencrypteddrive/projects/KubePentest/output/nmap/nmap-coorelated-pods-20251020-101547.md 
-Nmap logs Results saved to /mnt/secondencrypteddrive/projects/KubePentest/output/nmap/nmap-logs-pods-20251020-101547.txt 
+Nmap Scan Results saved to /.../output/nmap/nmap-results-pods-20251020-101547.xml
+Nmap Scan Coorelated results saved to /.../output/nmap/nmap-coorelated-pods-20251020-101547.json 
+Nmap Scan Coorelated results saved to /.../output/nmap/nmap-coorelated-pods-20251020-101547.csv 
+Nmap Scan Coorelated results saved to /.../output/nmap/nmap-coorelated-pods-20251020-101547.md 
+Nmap logs Results saved to /.../output/nmap/nmap-logs-pods-20251020-101547.txt 
 Job 'nmap-scan-1760973347241' deleted 
 ```
 
@@ -427,7 +429,7 @@ The command will:
 - Provide a sample gowitness command for taking screenshots
 
 ```bash
-$ java -jar build/libs/VirtueKube-0.1-all.jar nmap-to-gowitness -h
+$ java -jar build/libs/VirtueKube-0.2.0-all.jar nmap-to-gowitness -h
 
 Usage: java -jar virtuekube-all.jar nmap-to-gowitness [<options>]
 
@@ -445,7 +447,7 @@ Options:
 > Run this command as the simulated compromised developer kubectl user
 
 ```bash
-$ java -jar build/libs/VirtueKube-0.1-all.jar proxy-socks5 -h
+$ java -jar build/libs/VirtueKube-0.2.0-all.jar proxy-socks5 -h
 
 Usage: java -jar virtuekube-all.jar proxy-socks5 [<options>]
 
@@ -457,8 +459,8 @@ Options:
   -l, --label=<text>         Label to identify the proxy pod
   -h, --help                 Show this message and exit
 
-$ java -jar build/libs/VirtueKube-0.1-all.jar proxy-socks5 -n team-b-test
-Pod Template Loading /mnt/secondencrypteddrive/projects/KubePentest/testCases/pod-template.yaml 
+$ java -jar build/libs/VirtueKube-0.2.0-all.jar proxy-socks5 -n team-b-test
+Pod Template Loading /.../testCases/pod-template.yaml 
 Pod Deploying SOCKS5 proxy pod socks5-proxy to namespace team-b-test 
 Pod 'socks5-proxy' Status: Phase=Pending 
 Pod 'socks5-proxy' Status: Phase=Pending 
@@ -504,7 +506,7 @@ Output files:
 
 
 ```bash
-$ java -jar build/libs/VirtueKube-0.1-all.jar security-analysis -h
+$ java -jar build/libs/VirtueKube-0.2.0-all.jar security-analysis -h
 
 Usage: java -jar virtuekube-all.jar security-analysis [<options>]
 
@@ -534,7 +536,7 @@ Output files:
 - `exploit-serviceaccounts-<timestamp>.md`: Markdown file with results of service account token exploitation attempts
 
 ```bash
-$ java -jar build/libs/VirtueKube-0.1-all.jar exploit -h
+$ java -jar build/libs/VirtueKube-0.2.0-all.jar exploit -h
 
 Usage: java -jar virtuekube-all.jar exploit [<options>]
 
@@ -577,7 +579,7 @@ Options:
    ```bash
    ./gradlew shadowJar
    ```
-   This will create a JAR file in `build/libs/VirtueKube-0.1-all.jar`
+   This will create a JAR file in `build/libs/VirtueKube-0.2.0-all.jar`
 
 
 ## Penetration Testing Workflow
